@@ -872,7 +872,7 @@ const $ = (id) => document.getElementById(id), app = $("app");
 const SITE = "https://satou-aaaaa.github.io/saibansho-doko/";
 const FEEDBACK = "https://github.com/satou-aaaaa/saibansho-doko/issues/new?template=feedback.yml";
 if (window.Core) Core.bindFeedback({}); // 「感想を送る」は全ゲームで1つの Googleフォームへ（ゲーム名・版などを事前入力。GitHub のアカウントが無くても送れる）
-const KEY = "ssd-v1", FSKEY = "ssd-fs", EPOCH = "2026-11-27";
+const KEY = "ssd-v1", FSKEY = "ssd-fs", EPOCH = "2026-11-26";
 const G = window.SSD, LV = G.LV;
 Depth.setValid((t) => { if (!Object.prototype.hasOwnProperty.call(G.BY, String(t).split("|")[0])) return false; G.make(t); return true; }); // 作り直せない鍵（引き継ぎ・消えた種類）は復習に数えない
 

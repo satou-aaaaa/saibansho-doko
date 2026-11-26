@@ -28,7 +28,7 @@ body:
     id: good
     attributes:
       label: よかった所
-      placeholder: 例）片麻岩と結晶片岩のちがいがわかった
+      placeholder: 例）少額訴訟と140万円のちがいがわかった
     validations:
       required: false
   - type: textarea

@@ -18,7 +18,7 @@ const check = (name, ok, detail = "") => results.push({ name, ok: !!ok, detail: 
 const firstClose = async (q) => { if (await q.locator("#howto[open]").count()) await q.click("#howto-ok"); if (await q.evaluate(() => !!(window.Core && Core.coach && Core.coach.active()))) { await q.evaluate(() => { Core.coach.leave(); scrollTo(0, 0); }); await q.waitForTimeout(100); } }; // はじめての練習の吹き出しをやめてホームへ（sync-template の migrateFirstQa が足した）
 const G = createRequire(import.meta.url)(path.join(root, "data.js"));
 
-const PIN = "shogaku:5:2.1"; // 第1回の1問目（変わったら過去の日の問題が変わった印）
+const PIN = "isan:1:3.4"; // 第1回の1問目（変わったら過去の日の問題が変わった印）
 // ---- 1. 問題の作り方（ブラウザを使わない）----
 // 条文の表（ゲームとは別に書いた表。data.js の答えと2段目がこれと合うかを見る）
 // 出典：e-Gov 法令検索の裁判所法・民事訴訟法・家事事件手続法（2026-11-26 に読んだ）。種類 → [最初に扱う裁判所, 不服の行き先（chisai 地方・kosai 高等・saiko 最高・igi 同じ簡易へ異議）, 説明に出す条]
@@ -26,7 +26,7 @@ const PIN = "shogaku:5:2.1"; // 第1回の1問目（変わったら過去の日�
 // 第31条の3（家庭：家事の審判と調停・人事訴訟・少年の保護事件）・第16条（高等：地方の第一審・家庭・簡易の刑事の判決への控訴、地方と家庭の決定への抗告、地方の第二審の上告）・第7条（最高：上告）
 const TB = {
   "kashi-sho": ["簡易裁判所", "chisai", "裁判所法 第33条"], "kashi-dai": ["地方裁判所", "kosai", "裁判所法 第24条"], isan: ["家庭裁判所", "kosai", "家事事件手続法 第191条"],
-  "rikon-chotei": ["家庭裁判所", "kosai", "家事事件手続法 第244条"], shogaku: ["簡易裁判所", "igi", "民事訴訟法 第368条"], shikikin: ["簡易裁判所", "chisai", "裁判所法 第33条"],
+  "konin-hi": ["家庭裁判所", "kosai", "家事事件手続法 第150条"], shogaku: ["簡易裁判所", "igi", "民事訴訟法 第368条"], shikikin: ["簡易裁判所", "chisai", "裁判所法 第33条"],
   "jiko-dai": ["地方裁判所", "kosai", "裁判所法 第24条"], koken: ["家庭裁判所", "kosai", "家事事件手続法 第117条"], yoiku: ["家庭裁判所", "kosai", "家事事件手続法 第150条"],
   hoki: ["家庭裁判所", "kosai", "家事事件手続法 第201条"], "rikon-sosho": ["家庭裁判所", "kosai", "裁判所法 第31条の3"], shonen: ["家庭裁判所", "kosai", "裁判所法 第31条の3"],
   "koso-chi": ["高等裁判所", "saiko", "裁判所法 第16条"], just140: ["簡易裁判所", "chisai", "裁判所法 第33条"], just141: ["地方裁判所", "kosai", "裁判所法 第24条"],
@@ -86,7 +86,7 @@ const NEVER = {};
 {
   // 今日の5問・上級の組み方（3年分）
   const bad = [], cover = new Set(); let sameAsPrev = 0, prev = "";
-  const d0 = Date.parse("2026-11-27");
+  const d0 = Date.parse("2026-11-26");
   for (let i = 0; i < 365 * 3; i++) {
     const d = new Date(d0 + i * 864e5).toISOString().slice(0, 10), dl = G.dailyTags(d), hl = G.hardTags(d);
     const dk = dl.map((t) => t.split("|")[0]), hk = hl.map((t) => t.split("|")[0]);
@@ -99,8 +99,8 @@ const NEVER = {};
   check("今日の5問（やさしい2・ふつう2・むずかしい1、種類は重ねない）と上級（むずかしい3・今日のむずかしいと別）を3年分作れる", bad.length === 0, bad.slice(0, 5).join(","));
   check(`2か月のうちに${G.KINDS.length}種類が全部出る・前の日と同じ組の日が少ない`, cover.size === G.KINDS.length && sameAsPrev < 20, `${cover.size}種類・前の日と同じ ${sameAsPrev}日`);
   // 過去の日の問題が変わらない（data.js を直したときの見張り。値は 2026-11-26 に作ったもの）
-  const P0 = G.make(G.dailyTags("2026-11-27")[0]);
-  check("第1回（2026-11-27）の1問目が作ったときのまま（並べ替え・削除で過去の日の問題を変えない）", `${P0.kind}:${P0.v}` === PIN, `${P0.kind}:${P0.v}`);
+  const P0 = G.make(G.dailyTags("2026-11-26")[0]);
+  check("第1回（2026-11-26）の1問目が作ったときのまま（並べ替え・削除で過去の日の問題を変えない）", `${P0.kind}:${P0.v}` === PIN, `${P0.kind}:${P0.v}`);
 }
 
 // ---- 2. ファイルの中身 ----
@@ -115,7 +115,7 @@ check("乱数は sort の比較の中で引かない（ブラウザで引く回�
 check("言い方：「必ず」「絶対」と言い切らない（政令の例外もある）・画像を入れない", !/絶対に|必ず(当て|わか|見分|建て)/.test(html + gen + readme) && !/<img/.test(html));
 { const howto = (html.match(/<dialog id="howto"[\s\S]*?<\/dialog>/) || [""])[0], ab = (html.match(/function about\(\)[\s\S]*?\n}/) || [""])[0], dis = (t) => /代わりではありません/.test(t) && /裁判所の案内や専門家に確かめてください/.test(t) && /条文を、?短く(やさしく)?言いかえ/.test(t);
   check("言い方：遊び方・「このゲームについて」・README のどれにも、条文を言いかえた文であること・公式の情報の代わりではないこと・実際は裁判所の案内や専門家に確かめることがある", dis(howto) && dis(ab) && dis(readme), `遊び方 ${dis(howto)}・について ${dis(ab)}・README ${dis(readme)}`); }
-check("写し元（会社の任期と期限・何年とっておく？・特許は何年？・免許は何歳から？・駐車禁止は何m？・届け出いつまで？・危険物の類あて・用途地域あて・岩石系統分け・SDGsの目標あて・震度よみ・憲法のしくみ・裁判の期限）の言葉が残っていない（共通部品 store の中は除く・game-dev.md A 手順5）", !/岩石|ganseki|GNK|gnk|産総研|地質|gsj|火成|堆積|変成|SDG|ターゲット|仮訳|外務省|アジェンダ|震度|気象庁|解説表|地震|jma\\.go|shd|SHD|ようす帳|憲法|kenpo|kps|KPS|用途地域|都市計画|建築基準|youto|yto|YTO|危険物|消防法|第何類|固体|液体|品名|kikenbutsu|kbr|KBR|届け出|市区町村|税務署|todokede|tdk|TDK|駐車|停車|chusha|ckr|CKR|場所帳|免許|menkyo|mkn|MKN|道路交通法|何歳|特許|商標|意匠|tokkyo|tkk|TKK|期間帳|期限帳|保存期間|hozon|hzk|HZK|カルテ|処方|会社の任期|会社帳|kaisha|ksk|KSK|取締役|監査役|株主|裁判の期限|saiban-kigen|sbk|SBK|期限帳|勾留|逮捕|送致|支払督促|刑事訴訟法|24時間|48時間|期間は？/.test(html.replace(/<!-- store:begin[\s\S]*?<!-- store:end -->/, "") + gen + readme));
+check("写し元（感想フォームも見る・会社の任期と期限・何年とっておく？・特許は何年？・免許は何歳から？・駐車禁止は何m？・届け出いつまで？・危険物の類あて・用途地域あて・岩石系統分け・SDGsの目標あて・震度よみ・憲法のしくみ・裁判の期限）の言葉が残っていない（共通部品 store の中は除く・game-dev.md A 手順5）", !/岩石|ganseki|GNK|gnk|産総研|地質|gsj|火成|堆積|変成|SDG|ターゲット|仮訳|外務省|アジェンダ|震度|気象庁|解説表|地震|jma\\.go|shd|SHD|ようす帳|憲法|kenpo|kps|KPS|用途地域|都市計画|建築基準|youto|yto|YTO|危険物|消防法|第何類|固体|液体|品名|kikenbutsu|kbr|KBR|届け出|市区町村|税務署|todokede|tdk|TDK|駐車|停車|chusha|ckr|CKR|場所帳|免許|menkyo|mkn|MKN|道路交通法|何歳|特許|商標|意匠|tokkyo|tkk|TKK|期間帳|期限帳|保存期間|hozon|hzk|HZK|カルテ|処方|会社の任期|会社帳|kaisha|ksk|KSK|取締役|監査役|株主|裁判の期限|saiban-kigen|sbk|SBK|期限帳|勾留|逮捕|送致|支払督促|刑事訴訟法|24時間|48時間|期間は？/.test(html.replace(/<!-- store:begin[\s\S]*?<!-- store:end -->/, "") + gen + readme + readFileSync(path.join(root, ".github/ISSUE_TEMPLATE/feedback.yml"), "utf8")));
 check("画面にお笑いの言葉を入れない（本物っぽく）", !/お笑い|ギャグ|ツッコミ|なんでやねん|（うそ）/.test(html + gen));
 check("引き継ぎ：transfer.js をゲームの script より前に、このゲームの記録のキー（記録・文字・復習）だけで読む・depth.js も前に読む", /<script src="transfer\.js" data-game="saibansho-doko" data-keys="ssd-v1,ssd-fs,ssd-depth"><\/script>\s*<script src="depth\.js" data-game="saibansho-doko" data-key="ssd-depth"><\/script>\s*<\/head>/.test(html) && html.indexOf('src="transfer.js"') < html.indexOf('src="data.js"') && /data-hk/.test(html) && existsSync(path.join(root, "transfer.js")));
 check("好きなだけ遊べる：チケット・回数の上限・🔒で開くモードを入れない（game-dev.md F1・F2）", !/🎫|チケット|すると開く|🔒/.test(html) && !/\blife\b|ELIFE/.test(html));
@@ -131,7 +131,7 @@ check("好きなだけ遊べる：チケット・回数の上限・🔒で開く
 check("README の URL のすぐ後ろに全角の字を続けない（Link check が URL の一部と読む）", !/https?:\/\/[\x21-\x7e]*[^\x00-\x7f]/.test(readme.replace(/\]\(https?:\/\/[^)\s]+\)/g, "").replace(/<https?:\/\/[^>\s]+>/g, "")));
 { const sw = readFileSync(path.join(root, "sw.js"), "utf8"), mf = JSON.parse(readFileSync(path.join(root, "manifest.webmanifest"), "utf8"));
   const shell = JSON.parse(sw.match(/SHELL = (\[[^\]]+\])/)[1]);
-  check("PWA：sw.js は画面のファイルを全部保存し（引き継ぎの transfer.js・深さの depth.js も）、取り直して保存し、外へ何も送らない", ["./index.html", "./data.js", "./transfer.js", "./depth.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"].every((f) => shell.includes(f)) && /cache: "reload"/.test(sw) && !/https?:\/\//.test(sw.replace(/^\/\/.*$/gm, "")));
+  check("PWA：sw.js は画面のファイルを全部保存し（引き継ぎの transfer.js・深さの depth.js も）、取り直して保存し、外へ何も送らない", ["./index.html", "./data.js", "./transfer.js", "./transfer-qr.js", "./depth.js", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"].every((f) => shell.includes(f)) && /cache: "reload"/.test(sw) && !/https?:\/\//.test(sw.replace(/^\/\/.*$/gm, "")));
   { const st = await checkSwStall(sw); check("PWA：通信が止まっても4秒ほどで保存した画面に切り替わり、少しずつ届く受信は待ち、何も無ければ60秒で返す（shared-workflows template/qa/sw-check.mjs）", st.ok, JSON.stringify(st)); }
   check("PWA：manifest にアイコン2つと名前がある", mf.name === "どこの裁判所？" && mf.icons.length >= 2 && mf.start_url === "./"); }
 
@@ -175,7 +175,7 @@ try {
   const p = await newPage();
   check("はじめて開くと遊び方が出る", await p.locator("#core-coach").waitFor({ timeout: 3000 }).then(() => true, () => false));
   { const c = await browser.newContext(); const r = await c.newPage(); await r.goto(url); await r.waitForTimeout(200); let again = 0;
-    for (let i = 0; i < 10; i++) { await r.evaluate(() => localStorage.clear()); await r.reload(); await r.waitForTimeout(200); await r.keyboard.press("Escape"); await r.reload(); await r.waitForTimeout(200); again += await r.locator("#howto[open]").count(); }
+    for (let i = 0; i < 10; i++) { await r.evaluate(() => localStorage.clear()); await r.reload(); await r.waitForTimeout(200); await r.keyboard.press("Escape"); await r.reload(); await r.waitForTimeout(200); again += await r.locator("#howto[open]").count() + await r.locator("#core-coach").count(); }
     check("遊び方を Esc で閉じてすぐ読み直しても出ない（10回）", again === 0);
   { const c = await browser.newContext(); const r = await c.newPage(); const big = []; // 題が h1{flex:1} で縦に伸び（伸びない形と比べて4pxより高ければ失敗）、iPad の縦で大きなすき間が出た（shared-workflows incidents/2026-11-07-title-stretched.md）
     for (const [w, h] of [[820, 1180], [390, 844], [1280, 800]]) { await r.setViewportSize({ width: w, height: h }); await r.goto(url); await r.waitForTimeout(200); await r.keyboard.press("Escape"); await r.waitForTimeout(100);
@@ -449,7 +449,7 @@ try {
     await solve(q); await q.click("#next"); await q.waitForTimeout(150);
     const after = await mem(q), dp2 = await q.evaluate(() => JSON.parse(localStorage.getItem("ssd-depth")));
     check("復習を終えると結果は「復習」・今日の記録は増えない・シェアは出ない", (await q.textContent("h1")).includes("復習") && JSON.stringify(after.days) === JSON.stringify(before.days) && await q.locator("#share").count() === 0);
-    check("復習で一度で正解すると、次は3日後へ進む", Object.values(dp2.rv).every((x) => x.s === 1 && x.due > TODAY));
+    check("復習で一度で正解すると、次は3日後へ進む", dp2.rv["isan|dp1"] && dp2.rv["isan|dp1"].s === 1 && dp2.rv["isan|dp1"].due === new Date(Date.parse(TODAY) + 3 * 864e5).toISOString().slice(0, 10));
     await q.goto(url); await q.waitForTimeout(150);
     check("復習を終えたら、ホームの「復習」は消える", await q.locator("#go-r").count() === 0);
     await q.evaluate(() => { const d = JSON.parse(localStorage.getItem("ssd-depth")); d.rv["nai|1"] = { s: 0, due: "2026-01-01", t: 1 }; d.rv["constructor|x"] = { s: 0, due: "2026-01-01", t: 2 }; localStorage.setItem("ssd-depth", JSON.stringify(d)); });
